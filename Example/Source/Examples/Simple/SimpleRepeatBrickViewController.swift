@@ -18,7 +18,7 @@ class SimpleRepeatBrickViewController: BrickViewController, LabelBrickCellDataSo
         return "Example how to use the repeatCountDataSource"
     }
 
-    let numberOfLabels = 50
+    let numberOfLabels = 5000
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +30,7 @@ class SimpleRepeatBrickViewController: BrickViewController, LabelBrickCellDataSo
         self.view.backgroundColor = .brickBackground
 
         let section = BrickSection(bricks: [
-            LabelBrick(BrickIdentifiers.repeatLabel, width: .Ratio(ratio: 0.5), height: .Auto(estimate: .Fixed(size: 50)), backgroundColor: .brickGray1, dataSource: self),
+            LabelBrick(BrickIdentifiers.repeatLabel, width: .Ratio(ratio: 1), height: .Auto(estimate: .Fixed(size: 50)), backgroundColor: .brickGray1, dataSource: self),
             ], inset: 10, edgeInsets: UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5))
 
         section.repeatCountDataSource = self
@@ -66,6 +66,7 @@ class SimpleRepeatBrickViewController: BrickViewController, LabelBrickCellDataSo
             }
             text += "BRICK \(cell.index + 1)"
         }
+//        cell.label.numberOfLines = 5
         cell.label.text = text
         cell.configure()
     }

@@ -91,12 +91,25 @@ public class BrickFlowLayout: UICollectionViewLayout, BrickLayout {
     var reloadIndexPaths: [NSIndexPath] = []
 
 
+    /// Frame that is currently of interest for calculating
+    var frameOfInterest: CGRect = .zero
+
     internal func calculateSectionsIfNeeded() -> [Int: BrickLayoutSection] {
         guard let _ = dataSource else {
             fatalError("No dataSource was set for BrickFlowLayout")
         }
 
         if let sections = sections {
+
+            let currentSections = sections.values
+            for section in currentSections {
+                section.continueCalculatingCells { attributes, oldFrame in
+                    self.brickZones?.addAttributesToZones(attributes)
+                }
+
+            }
+            recalculateContentSize()
+
             return sections
         }
 
@@ -262,7 +275,9 @@ extension BrickFlowLayout {
     }
 
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+        frameOfInterest = CGRect(x: 0, y: 0, width: rect.maxX, height: rect.maxY)
         calculateSectionsIfNeeded()
+        
         return brickZones?.layoutAttributesForElementsInRect(rect, for: self)
     }
 

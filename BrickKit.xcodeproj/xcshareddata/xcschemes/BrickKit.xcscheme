@@ -38,6 +38,128 @@
                BlueprintName = "BrickKitTests-iOS"
                ReferencedContainer = "container:BrickKit.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AlignRowHeightTests">
+               </Test>
+               <Test
+                  Identifier = "AsynchronousResizableCellTests">
+               </Test>
+               <Test
+                  Identifier = "BaseBrickCellTests">
+               </Test>
+               <Test
+                  Identifier = "BrickAppearBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "BrickAttributesZoneTests">
+               </Test>
+               <Test
+                  Identifier = "BrickCollectionViewDataSourceTests">
+               </Test>
+               <Test
+                  Identifier = "BrickCollectionViewTests">
+               </Test>
+               <Test
+                  Identifier = "BrickDimensionTests">
+               </Test>
+               <Test
+                  Identifier = "BrickExtensionsTests">
+               </Test>
+               <Test
+                  Identifier = "BrickFlowLayoutBaseTests">
+               </Test>
+               <Test
+                  Identifier = "BrickFlowLayoutEdgeInsetsTests">
+               </Test>
+               <Test
+                  Identifier = "BrickFlowLayoutSectionTests">
+               </Test>
+               <Test
+                  Identifier = "BrickFlowLayoutTests">
+               </Test>
+               <Test
+                  Identifier = "BrickFlowLayoutZIndexTests">
+               </Test>
+               <Test
+                  Identifier = "BrickInvalidationContextTests">
+               </Test>
+               <Test
+                  Identifier = "BrickKitTests">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests">
+               </Test>
+               <Test
+                  Identifier = "BrickModelsTests">
+               </Test>
+               <Test
+                  Identifier = "BrickSectionDataSourceTests">
+               </Test>
+               <Test
+                  Identifier = "BrickSelfsizingFlowLayoutTests">
+               </Test>
+               <Test
+                  Identifier = "BrickUtilsTests">
+               </Test>
+               <Test
+                  Identifier = "BrickViewControllerTests">
+               </Test>
+               <Test
+                  Identifier = "ButtonBrickTests">
+               </Test>
+               <Test
+                  Identifier = "CardLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "CollectionBrickTests">
+               </Test>
+               <Test
+                  Identifier = "CoverFlowLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "HideLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "ImageBrickTests">
+               </Test>
+               <Test
+                  Identifier = "ImageDownloaderCellTests">
+               </Test>
+               <Test
+                  Identifier = "InteractiveTests">
+               </Test>
+               <Test
+                  Identifier = "LabelBrickTests">
+               </Test>
+               <Test
+                  Identifier = "MaxZIndexBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "MinimumStickyLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "OffsetLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "OnScrollDownStickyLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "SetZIndexBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "SnapToPointLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "SpotlightLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "StickyFooterLayoutBehaviorTests">
+               </Test>
+               <Test
+                  Identifier = "StickyLayoutBehaviorTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

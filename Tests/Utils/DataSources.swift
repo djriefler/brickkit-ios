@@ -131,6 +131,7 @@ class FixedBrickLayoutSectionDataSource: NSObject, BrickLayoutSectionDataSource 
     var inset: CGFloat
 
     var widthRatio: CGFloat = 1
+    var frameOfInterest: CGRect = CGRect(x: 0, y: 0, width: 320, height: CGFloat.infinity) // Infinite frame height
 
     init(widthRatios: [CGFloat], heights: [CGFloat], edgeInsets: UIEdgeInsets, inset: CGFloat) {
         self.widthRatios = widthRatios
@@ -156,7 +157,6 @@ class FixedBrickLayoutSectionDataSource: NSObject, BrickLayoutSectionDataSource 
     }
 
     func prepareForSizeCalculation(for attributes: BrickLayoutAttributes, containedIn width: CGFloat, origin: CGPoint, invalidate: Bool, in section: BrickLayoutSection, updatedAttributes: OnAttributesUpdatedHandler?) {
-
     }
     
     func size(for attributes: BrickLayoutAttributes, containedIn width: CGFloat, in section: BrickLayoutSection) -> CGSize {
