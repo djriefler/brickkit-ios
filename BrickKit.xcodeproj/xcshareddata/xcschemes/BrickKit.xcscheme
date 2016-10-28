@@ -88,7 +88,52 @@
                   Identifier = "BrickKitTests">
                </Test>
                <Test
+                  Identifier = "BrickLayoutSectionBinarySearchTests">
+               </Test>
+               <Test
                   Identifier = "BrickLayoutSectionTests">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testAppendItem()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testAppendItems()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testDeleteLastItem()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testDeleteLastItemEmpty()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testDeleteLastItems()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testDoubleThreeBy()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testNoDataSource()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testNoInvalidateWithoutDataSource()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testNoItems()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testSimpleRows()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testThreeBy()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testUpdateHeightAtIndexZero()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testUpdateLargerHeightInMiddle()">
+               </Test>
+               <Test
+                  Identifier = "BrickLayoutSectionTests/testUpdateSmallerHeightInMiddle()">
                </Test>
                <Test
                   Identifier = "BrickModelsTests">

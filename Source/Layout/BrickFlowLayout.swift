@@ -94,21 +94,35 @@ public class BrickFlowLayout: UICollectionViewLayout, BrickLayout {
     /// Frame that is currently of interest for calculating
     var frameOfInterest: CGRect = .zero
 
-    internal func calculateSectionsIfNeeded() -> [Int: BrickLayoutSection] {
+    internal func calculateSectionsIfNeeded(rect: CGRect) -> [Int: BrickLayoutSection] {
         guard let _ = dataSource else {
             fatalError("No dataSource was set for BrickFlowLayout")
         }
 
+        let oldRect = frameOfInterest
+        frameOfInterest = CGRect(x: 0, y: 0, width: rect.maxX, height: rect.maxY)
+
         if let sections = sections {
 
-            let currentSections = sections.values
-            for section in currentSections {
-                section.continueCalculatingCells { attributes, oldFrame in
-                    self.brickZones?.addAttributesToZones(attributes)
-                }
+            //Only continue calculating if the new frame of interest is further than the old frame
+            let shouldContinueCalculating = scrollDirection == .Vertical ? oldRect.maxY <= frameOfInterest.maxY : oldRect.maxX <= frameOfInterest.maxX
 
+            if shouldContinueCalculating {
+                let currentSections = sections.values
+                for section in currentSections {
+                    section.continueCalculatingCells { attributes, oldFrame in
+                        self.brickZones?.addAttributesToZones(attributes)
+                    }
+
+                }
+                for behavior in behaviors {
+                    behavior.invalidateInCollectionViewLayout(self, contentSize: &contentSize, attributesDidUpdate: { attributes, oldFrame in
+                        self.attributesWereUpdated(attributes, oldFrame: oldFrame, fromBehaviors: true, updatedAttributes: { attributes, oldFrame in
+                        })
+                    })
+                }
+                recalculateContentSize()
             }
-            recalculateContentSize()
 
             return sections
         }
@@ -133,8 +147,11 @@ public class BrickFlowLayout: UICollectionViewLayout, BrickLayout {
     }
 
     private func resetBrickZones(width: CGFloat) {
-        brickZones = BrickZones(collectionViewSize: CGSize(width: width, height: _collectionView.frame.size.height), scrollDirection: self.scrollDirection)
+        if !BrickLayoutSection.OnlyCalculateFrameOfInterest {
+            brickZones = BrickZones(collectionViewSize: CGSize(width: width, height: _collectionView.frame.size.height), scrollDirection: self.scrollDirection)
+        }
     }
+
 
     internal func calculateSections() {
         sections = [:]
@@ -147,21 +164,56 @@ public class BrickFlowLayout: UICollectionViewLayout, BrickLayout {
 
         self.resetBrickZones(self.contentWidth!)
 
+        self.calculateDownStreamIndexPaths()
+
         if _collectionView.numberOfSections() > 0 {
             calculateSection(for: 0, with: nil, containedInWidth: self.contentSize.width, at: CGPoint.zero)
         }
+    }
+
+    /// Array that keeps track of indexPaths that need downstream calculation
+    var downStreamBehaviorIndexPaths: [Int: [NSIndexPath]] = [:]
+
+    internal func calculateDownStreamIndexPaths() {
+        downStreamBehaviorIndexPaths = [:]
+
+        guard let dataSource = dataSource else {
+            return
+        }
+
+        let downstreamBehaviors = self.behaviors.filter { $0.needsDownstreamCalculation }
+        if !downstreamBehaviors.isEmpty {
+            // This is an expensive operation, so only execute when needed
+            for section in 0..<_collectionView.numberOfSections() {
+                print("Number of items: \(_collectionView.numberOfItemsInSection(section))")
+                var downstreamIndexPaths = [NSIndexPath]()
+                for item in 0..<_collectionView.numberOfItemsInSection(section) {
+                    let indexPath = NSIndexPath(forItem: item, inSection: section)
+                    let identifier = dataSource.brickLayout(self, identifierForIndexPath: indexPath)
+                    for behavior in downstreamBehaviors {
+                        if behavior.shouldUseForDownstreamCalculation(for: indexPath, with: identifier, forCollectionViewLayout: self) {
+                            downstreamIndexPaths.append(indexPath)
+                        }
+                    }
+                }
+                if !downstreamIndexPaths.isEmpty {
+                    downStreamBehaviorIndexPaths[section] = downstreamIndexPaths
+                }
+            }
+        }
+
     }
 
     internal func calculateSection(for sectionIndex: Int, with sectionAttributes: BrickLayoutAttributes?, containedInWidth width: CGFloat, at origin: CGPoint) {
         guard _collectionView.numberOfSections() > sectionIndex else {
             fatalError("The section is not found")
         }
-        let section = BrickLayoutSection(sectionIndex: sectionIndex, sectionAttributes: sectionAttributes, numberOfItems: _collectionView.numberOfItemsInSection(sectionIndex), origin: origin, sectionWidth: width, dataSource: self)
+        let section = BrickLayoutSection(sectionIndex: sectionIndex, sectionAttributes: sectionAttributes, numberOfItems: _collectionView.numberOfItemsInSection(sectionIndex), origin: origin, sectionWidth: width, dataSource: self, delegate: self)
         section.invalidateAttributes { (attributes, oldFrame) in
             self.brickZones?.addAttributesToZones(attributes)
-            for behavior in self.behaviors {
-                behavior.registerAttributes(attributes, forCollectionViewLayout: self)
-            }
+//            for behavior in self.behaviors {
+//                behavior.registerAttributes(attributes, forCollectionViewLayout: self)
+//            }
 
         }
         sections?[sectionIndex] = section
@@ -275,10 +327,35 @@ extension BrickFlowLayout {
     }
 
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        frameOfInterest = CGRect(x: 0, y: 0, width: rect.maxX, height: rect.maxY)
-        calculateSectionsIfNeeded()
-        
-        return brickZones?.layoutAttributesForElementsInRect(rect, for: self)
+        calculateSectionsIfNeeded(rect)
+        if BrickLayoutSection.OnlyCalculateFrameOfInterest {
+            guard let sections = self.sections else {
+                return nil
+            }
+
+            var attributes: [UICollectionViewLayoutAttributes] = []
+            for (_, section) in sections {
+                attributes.appendContentsOf(section.layoutAttributesForElementsInRect(rect))
+            }
+
+            for (section, indexPaths) in downStreamBehaviorIndexPaths {
+                guard let sectionAttributes = sections[section]?.attributes else {
+                    continue
+                }
+                for indexPath in indexPaths {
+                    guard let brickAttributes = sectionAttributes[indexPath.item] else {
+                        continue
+                    }
+                    if brickAttributes.frame.intersects(rect) {
+                        attributes.append(brickAttributes)
+                    }
+                }
+            }
+
+            return attributes
+        } else {
+            return brickZones?.layoutAttributesForElementsInRect(rect, for: self)
+        }
     }
 
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
@@ -291,6 +368,7 @@ extension BrickFlowLayout {
         }
 
         let shouldInvalidate = preferredAttributes.frame.height != brickAttribute.originalFrame.height
+        brickAttribute.isEstimateSize = false
         return shouldInvalidate
     }
 
@@ -300,6 +378,17 @@ extension BrickFlowLayout {
 
 }
 
+extension BrickFlowLayout: BrickLayoutSectionDelegate {
+
+    func brickLayoutSection(section: BrickLayoutSection, didCreateAttributes attributes: BrickLayoutAttributes) {
+        for behavior in behaviors {
+            behavior.registerAttributes(attributes, forCollectionViewLayout: self)
+        }
+    }
+
+}
+
+// MARK: - BrickLayoutSectionDataSource
 extension BrickFlowLayout: BrickLayoutSectionDataSource {
 
     func edgeInsets(in section: BrickLayoutSection) -> UIEdgeInsets {
@@ -413,6 +502,9 @@ extension BrickFlowLayout: BrickLayoutSectionDataSource {
         return size
     }
 
+    func downStreamIndexPaths(in section: BrickLayoutSection) -> [NSIndexPath] {
+        return downStreamBehaviorIndexPaths[section.sectionIndex] ?? []
+    }
 }
 
 extension BrickFlowLayout: BrickLayoutInvalidationProvider {
@@ -523,6 +615,10 @@ extension BrickFlowLayout: BrickLayoutInvalidationProvider {
                     updatedAttributes(attributes: attributes, oldFrame: oldFrame)
                     self.attributesWereUpdated(attributes, oldFrame: oldFrame, fromBehaviors: fromBehaviors, updatedAttributes: updatedAttributes)
                 })
+
+                // Because attributes could have been added, the frame height might have been changed
+//                attributes.frame = brickSection.frame
+//                attributes.originalFrame.size = brickSection.frame.size
             }
         default: break
         }
@@ -541,7 +637,7 @@ extension BrickFlowLayout: BrickLayoutInvalidationProvider {
 
     func recalucateZIndexesForSection(section: BrickLayoutSection, updatedAttributes: OnAttributesUpdatedHandler) {
         guard let dataSource = dataSource else { return }
-        for attributes in section.attributes {
+        for attributes in section.attributes.values {
             if zIndexBehavior == .BottomUp {
                 attributes.zIndex = zIndex(for: attributes.indexPath.item, in: section)
             }
@@ -576,7 +672,7 @@ extension BrickFlowLayout: BrickLayoutInvalidationProvider {
 
         let currentFrame = section.frame
 
-        for attributes in section.attributes {
+        for attributes in section.attributes.values {
             var shouldHide = hideBehaviorDataSource.hideBehaviorDataSource(shouldHideItemAtIndexPath: attributes.indexPath, withIdentifier: attributes.identifier, inCollectionViewLayout: self)
 
             // If the sectionAttributes are hidden, hide this attribute as well

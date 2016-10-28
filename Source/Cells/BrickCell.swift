@@ -175,7 +175,7 @@ public class BrickCell: BaseBrickCell {
             return layoutAttributes
         }
 
-        let preferred = layoutAttributes.copy() as! UICollectionViewLayoutAttributes
+        let preferred = layoutAttributes.copy() as! BrickLayoutAttributes
 
         let size = CGSize(width: layoutAttributes.frame.width, height: self.heightForBrickView(withWidth: layoutAttributes.frame.width))
         preferred.frame.size = size

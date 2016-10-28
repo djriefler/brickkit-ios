@@ -834,7 +834,7 @@
 				TargetAttributes = {
 					4E3BD5C61DB008CD00541900 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = W4Q4KQLX4M;
+						DevelopmentTeam = M6N2F8KU6Q;
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 					};
@@ -1219,7 +1219,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = W4Q4KQLX4M;
+				DEVELOPMENT_TEAM = M6N2F8KU6Q;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.wafair.BrickKit-Example";
@@ -1234,7 +1234,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = W4Q4KQLX4M;
+				DEVELOPMENT_TEAM = M6N2F8KU6Q;
 				INFOPLIST_FILE = "$(SRCROOT)/Source/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.wafair.BrickKit-Example";

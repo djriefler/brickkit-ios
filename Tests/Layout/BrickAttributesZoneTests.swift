@@ -46,7 +46,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testSingleZone() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
 
         XCTAssertEqual(layout.brickZones?.attributesZones.count, 1)
@@ -57,7 +57,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickInTwoZones() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 500, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         XCTAssertEqual(layout.brickZones?.attributesZones.count, 2)
         XCTAssertEqual(layout.brickZones?.attributesZones[0]?.count, 1)
@@ -67,7 +67,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickInMultipleZones() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 2000, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         XCTAssertEqual(layout.brickZones?.attributesZones.count, 5)
         XCTAssertEqual(layout.brickZones?.attributesZones[0]?.count, 1)
@@ -80,7 +80,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickChangedZones() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         let firstAttributes = layout.layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection:0)) as! BrickLayoutAttributes
         firstAttributes.frame.origin.y += 480
@@ -94,7 +94,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickThatIsHidden() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 0, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         var firstSectionAttributes: UICollectionViewLayoutAttributes!
 
@@ -111,7 +111,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickThatBecomesHidden() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         var firstSectionAttributes: UICollectionViewLayoutAttributes!
 
@@ -128,7 +128,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testRemoveBrick() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         let firstSectionAttributes = layout.layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0))!
 
@@ -143,7 +143,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickNotChangedZones() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         let firstAttributes = layout.layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection:0)) as! BrickLayoutAttributes
         firstAttributes.frame.origin.y += 5
@@ -156,7 +156,7 @@ class BrickAttributesZoneTests: BrickFlowLayoutBaseTests {
     func testBrickChangedMultipleZones() {
         setDataSources(SectionsCollectionViewDataSource(sections: [1]), brickLayoutDataSource: FixedBrickLayoutDataSource(widthRatio: 1, height: 100, edgeInsets: UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)))
 
-        layout.calculateSectionsIfNeeded()
+        layout.calculateSectionsIfNeeded(hugeFrame)
 
         let firstAttributes = layout.layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection:0)) as! BrickLayoutAttributes
         firstAttributes.frame.origin.y += 400

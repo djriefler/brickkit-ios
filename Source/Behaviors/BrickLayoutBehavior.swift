@@ -13,6 +13,15 @@ import Foundation
 public class BrickLayoutBehavior: NSObject {
     public internal(set) weak var collectionViewLayout: UICollectionViewLayout?
 
+    // Flag that indicates that this behavior needs some calculation down stream to function correctly
+    public var needsDownstreamCalculation: Bool {
+        return false
+    }
+
+    public func shouldUseForDownstreamCalculation(for indexPath: NSIndexPath, with identifier: String, forCollectionViewLayout collectionViewLayout: UICollectionViewLayout) -> Bool {
+        return false
+    }
+
     public func sectionAttributesForIndexPath(for indexPath: NSIndexPath, in layout: UICollectionViewLayout) -> BrickLayoutAttributes? {
         if let layout = layout as? BrickFlowLayout {
             return layout.layoutAttributesForSection(indexPath.section)

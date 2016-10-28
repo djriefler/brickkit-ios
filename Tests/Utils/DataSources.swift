@@ -179,6 +179,9 @@ class FixedBrickLayoutSectionDataSource: NSObject, BrickLayoutSectionDataSource 
         return true
     }
 
+    func downStreamIndexPaths(in section: BrickLayoutSection) -> [NSIndexPath] {
+        return []
+    }
 
     var alignRowHeights: Bool = false
     var scrollDirection: UICollectionViewScrollDirection = .Vertical
@@ -262,17 +265,29 @@ class FixedCardLayoutBehaviorDataSource: CardLayoutBehaviorDataSource {
 class FixedOffsetLayoutBehaviorDataSource: OffsetLayoutBehaviorDataSource {
     var originOffset: CGSize?
     var sizeOffset: CGSize?
+    var indexPaths: [NSIndexPath]?
 
-    init(originOffset: CGSize?, sizeOffset: CGSize?) {
+    init(originOffset: CGSize?, sizeOffset: CGSize?, indexPaths: [NSIndexPath]? = nil) {
         self.originOffset = originOffset
         self.sizeOffset = sizeOffset
+        self.indexPaths = indexPaths
     }
 
     func offsetLayoutBehavior(behavior: OffsetLayoutBehavior, originOffsetForItemAtIndexPath indexPath: NSIndexPath, withIdentifier identifier: String, inCollectionViewLayout collectionViewLayout: UICollectionViewLayout) -> CGSize? {
+        if let indexPaths = self.indexPaths {
+            if !indexPaths.contains(indexPath) {
+                return nil
+            }
+        }
         return originOffset
     }
 
     func offsetLayoutBehavior(behavior: OffsetLayoutBehavior, sizeOffsetForItemAtIndexPath indexPath: NSIndexPath, withIdentifier identifier: String, inCollectionViewLayout collectionViewLayout: UICollectionViewLayout) -> CGSize? {
+        if let indexPaths = self.indexPaths {
+            if !indexPaths.contains(indexPath) {
+                return nil
+            }
+        }
         return sizeOffset
     }
 }

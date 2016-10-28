@@ -8,6 +8,15 @@
 
 import Foundation
 
+protocol Frameable {
+    var frame: CGRect { get }
+    var hidden: Bool { get }
+}
+
+extension UICollectionViewLayoutAttributes: Frameable {
+    
+}
+
 enum BrickUtils {
 
     /// Calculates a width, based on the total width and its inset
@@ -30,25 +39,35 @@ enum BrickUtils {
     /// - parameter frames:    Array of frames to search through
     ///
     /// - returns: MaxY in the
-    static func findRowMaxY(for itemIndex: Int, in frames: [CGRect]) -> CGFloat? {
+    static func findRowMaxY<T: Frameable>(for itemIndex: Int, in frames: [Int: T]) -> T? {
         guard itemIndex <= frames.count else {
             return nil
         }
 
         if itemIndex == 0 {
-            return 0
+            return nil
         }
 
-        let currentY = frames[itemIndex-1].origin.y
-        var maxY = frames[itemIndex-1].maxY
+        guard let frameable = frames[itemIndex-1] else {
+            return nil
+        }
+
+//        let currentY = frameable.frame.origin.y
+        var maxFrameable = frameable
+//        var maxY = frameable.frame.maxY
         for index in (itemIndex-1).stride(to: -1, by: -1) {
-            if currentY != frames[index].origin.y {
-                return maxY
+            guard let nextFrameable = frames[index] where !nextFrameable.hidden else {
+                continue
             }
-            maxY = max(maxY, frames[index].maxY)
+            if maxFrameable.frame.maxY != nextFrameable.frame.origin.y {
+                return nextFrameable
+            }
+            if nextFrameable.frame.maxY > maxFrameable.frame.maxY {
+                maxFrameable = nextFrameable
+            }
         }
         
-        return maxY
+        return maxFrameable
     }
 }
 
