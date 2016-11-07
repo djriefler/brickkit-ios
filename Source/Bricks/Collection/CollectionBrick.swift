@@ -122,6 +122,7 @@ public class CollectionBrickCell: BrickCell, Bricklike, AsynchronousResizableCel
         isCalculatingHeight = true
 
         brickCollectionView.frame = layoutAttributes.bounds
+        brickCollectionView.frame.size.height = 50
         self.currentPage = brick.dataSource.currentPageForCollectionBrickCell(self)
         brickCollectionView.layoutSubviews()
 

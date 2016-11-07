@@ -330,6 +330,9 @@ extension BrickFlowLayout {
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         if !isCalculating {
             isCalculating = true
+            if self.collectionView?.superview != nil {
+                print("No CollectionBrick")
+            }
             calculateSectionsIfNeeded(rect)
             isCalculating = false
         }
