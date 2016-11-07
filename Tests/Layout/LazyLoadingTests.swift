@@ -67,11 +67,21 @@ class LazyLoadingTests: XCTestCase {
 
     func testThatOnlyNecessaryAttributesAreCreatedAndOrigin() {
 //        add an origin here
-        setupSection()
+        brickView.registerBrickClass(DummyBrick.self)
+
+        repeatBrick = DummyBrick(BrickIdentifier, height: .Fixed(size: 100))
+        let section = BrickSection(bricks: [
+            DummyBrick(height: .Fixed(size: 20)),
+            BrickSection(bricks: [repeatBrick])
+            ])
+        repeatCountDataSource = FixedRepeatCountDataSource(repeatCountHash: [BrickIdentifier: 100])
+        section.repeatCountDataSource = repeatCountDataSource
+
+        brickView.setSection(section)
 
         brickView.collectionViewLayout.layoutAttributesForElementsInRect(CGRect(x: 0, y: 0, width: 320, height: 500))
-        XCTAssertEqual(flowLayout.sections![1]!.attributes.count, 5)
-        XCTAssertEqual(flowLayout.sections![1]!.frame, CGRect(x: 0, y: 0, width: 320, height: 10000))
+        XCTAssertEqual(flowLayout.sections![2]!.attributes.count, 5)
+        XCTAssertEqual(flowLayout.sections![2]!.frame, CGRect(x: 0, y: 20, width: 320, height: 10000))
     }
 
     func testThatOnlyNecessaryAttributesAreCreatedTwoBy() {
@@ -140,38 +150,38 @@ class LazyLoadingTests: XCTestCase {
         XCTAssertEqual(lastAttributes?.frame, CGRect(x: 0.0, y: 440.0, width: 320.0, height: 100.0))
     }
 
-    func testThatDynamicHeightsWorksProperly() {
-        brickView.registerBrickClass(LabelBrick.self)
-        let section = BrickSection(bricks: [
-            LabelBrick(BrickIdentifier, text: "", configureCellBlock: { cell in
-                var text = ""
-                for _ in 0...cell.index {
-                    if !text.isEmpty {
-                        text += "\n"
-                    }
-                    text += "BRICK \(cell.index + 1)"
-                }
-                cell.label.text = text
-            })
-            ])
-        repeatCountDataSource = FixedRepeatCountDataSource(repeatCountHash: [BrickIdentifier: 1000])
-        section.repeatCountDataSource = repeatCountDataSource
-
-        brickView.setSection(section)
-        brickView.layoutSubviews()
-
-        flowLayout.alignRowHeights = true
-
+//    func testThatDynamicHeightsWorksProperly() {
+//        brickView.registerBrickClass(LabelBrick.self)
+//        let section = BrickSection(bricks: [
+//            LabelBrick(BrickIdentifier, text: "", configureCellBlock: { cell in
+//                var text = ""
+//                for _ in 0...cell.index {
+//                    if !text.isEmpty {
+//                        text += "\n"
+//                    }
+//                    text += "BRICK \(cell.index + 1)"
+//                }
+//                cell.label.text = text
+//            })
+//            ])
+//        repeatCountDataSource = FixedRepeatCountDataSource(repeatCountHash: [BrickIdentifier: 1000])
+//        section.repeatCountDataSource = repeatCountDataSource
+//
+//        brickView.setSection(section)
+//        brickView.layoutSubviews()
+//
+//        flowLayout.alignRowHeights = true
+//
 //        let attributes = brickView.collectionViewLayout.layoutAttributesForElementsInRect(CGRect(x: 0, y: 0, width: 320, height: 500))?.sort({$0.0.indexPath.item < $0.1.indexPath.item})
 //        print(attributes)
-
-        brickView.contentOffset.y = brickView.frame.height
-        brickView.layoutIfNeeded()
-
+//
+//        brickView.contentOffset.y = brickView.frame.height
+//        brickView.layoutIfNeeded()
+//
 //        let lastAttributes = attributes?.last
 //        print(lastAttributes)
 //        XCTAssertEqual(lastAttributes?.frame, CGRect(x: 0.0, y: 440.0, width: 320.0, height: 100.0))
-
+//
 //        print(brickView.visibleCells().map({$0.frame}))
 //        for cell in brickView.visibleCells() {
 //            let indexPath = brickView.indexPathForCell(cell)!
@@ -183,7 +193,7 @@ class LazyLoadingTests: XCTestCase {
 //                print("\(attributes.indexPath.item): \(attributes.frame.minY)")
 //            }
 //        }
-    }
+//    }
 
 }
 

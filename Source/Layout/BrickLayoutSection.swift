@@ -358,9 +358,13 @@ internal class BrickLayoutSection {
         var frameHeight: CGFloat = 0
         if let first = attributes[0] {
                 // If not all attributes are calculated, we need to estimate how big the section will be
-                let height = (maxY - first.originalFrame.origin.y) - edgeInsets.top + inset
+                let height = (maxY - first.originalFrame.origin.y) + inset
                 let percentageDone = CGFloat(attributes.count) / CGFloat(numberOfItems)
-                let frameHeightA = (height / percentageDone) - inset + edgeInsets.bottom + edgeInsets.top
+            let frameHeightA = (height / percentageDone) - inset + edgeInsets.bottom + edgeInsets.top
+
+//            let frameHeightA = (height / percentageDone) - (numberOfItems != attributes.count ? inset - edgeInsets.bottom : 0) + edgeInsets.bottom
+
+
             print("FrameHeightA: \(frameHeightA)")
 //            } else {
                 let frameHeightB = (maxY - first.originalFrame.origin.y) + edgeInsets.bottom + edgeInsets.top
@@ -369,7 +373,7 @@ internal class BrickLayoutSection {
             if numberOfItems != attributes.count {
                 frameHeight = frameHeightA
             } else {
-                frameHeight = frameHeightA
+                frameHeight = frameHeightB
                 if frameHeightB != frameHeightA {
                     print("Que?")
                 }
