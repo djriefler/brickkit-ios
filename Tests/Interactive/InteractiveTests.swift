@@ -559,6 +559,7 @@ class InteractiveTests: XCTestCase {
 
     // Mark: - Shouldn't crash
     func testShouldNotCrashOnReloadBricks() {
+        // we should check if the indexpath exists before adding it...
         brickView.registerBrickClass(DummyBrick.self)
 
         let section = BrickSection(bricks: [

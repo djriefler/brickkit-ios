@@ -42,7 +42,8 @@ public class StickyFooterLayoutBehavior: StickyLayoutBehavior {
             attributes.frame.origin.y = contentBounds.maxY - attributes.originalFrame.size.height - bottomInset
         } else {
             let y = contentBounds.maxY - attributes.originalFrame.size.height - bottomInset
-            attributes.frame.origin.y = min(y, attributes.originalFrame.origin.y)
+//            attributes.frame.origin.y = min(y, attributes.originalFrame.origin.y)
+                        attributes.frame.origin.y = y
         }
 
         if lastStickyFrame.size != CGSizeZero {

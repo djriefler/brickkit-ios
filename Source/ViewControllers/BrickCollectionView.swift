@@ -328,7 +328,8 @@ extension BrickCollectionView {
             }
 
             for i in 0..<abs(countDiff) {
-                indexPaths.append(NSIndexPath(forItem: (currentCount - i - 1), inSection: section))
+                let indexPath = NSIndexPath(forItem: (currentCount - i - 1), inSection: section)
+                indexPaths.append(indexPath)
             }
 
             if removed {

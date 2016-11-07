@@ -291,7 +291,7 @@ class BrickFlowLayoutSectionTests: BrickFlowLayoutBaseTests {
             ]
         ]
 
-        let attributes = layout.layoutAttributesForElementsInRect(collectionViewFrame)
+        let attributes = layout.layoutAttributesForElementsInRect(CGRect(x: 0, y: 0, width: collectionViewFrame.width, height: CGFloat.infinity))
         XCTAssertNotNil(attributes)
         XCTAssertTrue(verifyAttributesToExpectedResult(attributes!, expectedResult: expectedResult))
         XCTAssertEqual(layout.collectionViewContentSize(), CGSize(width: 320, height: 800))

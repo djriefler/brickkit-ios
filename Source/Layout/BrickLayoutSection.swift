@@ -150,14 +150,14 @@ internal class BrickLayoutSection {
 
         let offset = CGSize(width: origin.x - self.origin.x, height: origin.y - self.origin.y)
         self.frame.origin = origin
-//        continueCalculatingCells { (attributes, oldFrame) in
-//            if fromBehaviors {
-//                // We de-compensate the attributes, as they have been calculated with the updated origin...
-//                attributes.frame.origin.x -= offset.width
-//                attributes.frame.origin.y -= offset.height
-//            }
-//        }
-//        self.frame.origin = origin
+        continueCalculatingCells { (attributes, oldFrame) in
+            if fromBehaviors {
+                // We de-compensate the attributes, as they have been calculated with the updated origin...
+                attributes.frame.origin.x -= offset.width
+                attributes.frame.origin.y -= offset.height
+            }
+        }
+        self.frame.origin = origin
 
         self.offsetFrames(offset, fromBehaviors: fromBehaviors, updatedAttributes: updatedAttributes)
     }
@@ -193,7 +193,7 @@ internal class BrickLayoutSection {
             return
         }
 //        if sectionIndex == 1 && index < 2 {
-            print("Update Height \(index): \(height)")
+//            print("Update Height \(index): \(height)")
 //        }
         brickAttributes.isEstimateSize = false
 
@@ -283,19 +283,7 @@ internal class BrickLayoutSection {
         startOrigin = CGPoint(x: startFrame.origin.x + edgeInsets.left, y: startFrame.origin.y + edgeInsets.top)
         maxY = startFrame.origin.y
         if !create {
-//            let visibleAttributes = attributes.values.filter({ !$0.hidden })
-
-
-
-
-
-
-
             if firstIndex > 0 {
-                if firstIndex == 2 {
-                    print("Y")
-                }
-
                 var originY: CGFloat?
                 if let currentAttribute = attributes[firstIndex] {
                     originY = currentAttribute.originalFrame.minY
@@ -316,13 +304,6 @@ internal class BrickLayoutSection {
                         if originY != nextAttribute.originalFrame.minY {
                             break
                         }
-                    }
-                }
-
-                if let maxFrame = BrickUtils.findRowMaxY(for: firstIndex, in: attributes){
-                    let xmaxY = maxFrame.frame.maxY
-                    if xmaxY != maxY {
-                        print("Que?")
                     }
                 }
             } else {
@@ -358,11 +339,17 @@ internal class BrickLayoutSection {
         if BrickLayoutSection.OnlyCalculateFrameOfInterest {
             let downStreamIndexPaths = dataSource.downStreamIndexPaths(in: self)
             for indexPath in downStreamIndexPaths {
-                guard self.attributes[indexPath.item] == nil else {
-                    // If the attribute already exists, don't do anything with it
-                    break
+                if let downstreamAttributes = self.attributes[indexPath.item] {
+                    // If the attribute already exists, but not in the current frameset, push it off screen
+                    if indexPath.item >= attributes.count {
+                        downstreamAttributes.frame.origin.y = maxY
+                        downstreamAttributes.originalFrame.origin.y = maxY
+                    }
+                } else {
+                    // create the attribute, so it's available for the behaviors to pick it up
+                    createOrUpdateAttribute(at: indexPath.item, with: dataSource, x: &x, y: &y, maxY: &maxY, edgeInsets: edgeInsets, inset: inset, zIndexBehavior: zIndexBehavior, force: true, invalidate: invalidate, frameOfInterest: frameOfInterest, updatedAttributes: updatedAttributes, customHeightProvider: customHeightProvider)
                 }
-                createOrUpdateAttribute(at: indexPath.item, with: dataSource, x: &x, y: &y, maxY: &maxY, edgeInsets: edgeInsets, inset: inset, zIndexBehavior: zIndexBehavior, force: true, invalidate: invalidate, frameOfInterest: frameOfInterest, updatedAttributes: updatedAttributes, customHeightProvider: customHeightProvider)
+
             }
         }
 
@@ -370,15 +357,24 @@ internal class BrickLayoutSection {
 
         var frameHeight: CGFloat = 0
         if let first = attributes[0] {
-            if numberOfItems != attributes.count {
                 // If not all attributes are calculated, we need to estimate how big the section will be
-                let height = (maxY - first.originalFrame.origin.y) + inset
+                let height = (maxY - first.originalFrame.origin.y) - edgeInsets.top + inset
                 let percentageDone = CGFloat(attributes.count) / CGFloat(numberOfItems)
-                frameHeight = (height / percentageDone)// + edgeInsets.bottom + edgeInsets.top
+                let frameHeightA = (height / percentageDone) - inset + edgeInsets.bottom + edgeInsets.top
+            print("FrameHeightA: \(frameHeightA)")
+//            } else {
+                let frameHeightB = (maxY - first.originalFrame.origin.y) + edgeInsets.bottom + edgeInsets.top
+            print("FrameHeightB: \(frameHeightB)")
+//            }
+            if numberOfItems != attributes.count {
+                frameHeight = frameHeightA
             } else {
-                frameHeight = (maxY - first.originalFrame.origin.y) + edgeInsets.bottom + edgeInsets.top
+                frameHeight = frameHeightA
+                if frameHeightB != frameHeightA {
+                    print("Que?")
+                }
             }
-
+            print("FrameHeight: \(frameHeight)")
             let originY = first.originalFrame.origin.y - edgeInsets.top
 
             if frame.origin.y != originY {
@@ -405,16 +401,17 @@ internal class BrickLayoutSection {
             frame.size.width = x + edgeInsets.right
         }
 
-        print("\n")
-        print("Attributes")
-        let keys = attributes.keys.sort(<)
-        for key in keys {
-            print("\(key): \(attributes[key]!.frame)")
-        }
+
+//        print("\n")
+//        print("Attributes")
+//        let keys = attributes.keys.sort(<)
+//        for key in keys {
+//            print("\(key): \(attributes[key]!.frame) - \(attributes[key]!.originalFrame)")
+//        }
     }
 
     func createOrUpdateAttribute(at index: Int, with dataSource: BrickLayoutSectionDataSource, inout x: CGFloat, inout y: CGFloat, inout maxY: CGFloat, edgeInsets: UIEdgeInsets, inset: CGFloat, zIndexBehavior: BrickLayoutZIndexBehavior, force: Bool, invalidate: Bool, frameOfInterest: CGRect, updatedAttributes: OnAttributesUpdatedHandler?, customHeightProvider: ((attributes: BrickLayoutAttributes) -> CGFloat?)?) -> Bool {
-        print("createOrUpdateAttribute(\(index))")
+//        print("createOrUpdateAttribute(\(index))")
         let indexPath = NSIndexPath(forItem: index, inSection: sectionIndex)
 
         var width = widthAtIndex(index, dataSource: dataSource)
@@ -534,9 +531,6 @@ internal class BrickLayoutSection {
         if sectionIsHidden || !brickIsHiddenOrHasNoHeight {
             x = brickFrame.maxX + inset
             maxY = max(brickFrame.maxY, maxY)
-            if maxY == 331.0 && index == 1 {
-                print("Que?")
-            }
         }
 
         brickAttributes.alpha = brickAttributes.hidden ? 0 : 1
@@ -570,7 +564,7 @@ internal class BrickLayoutSection {
             var newFrame = oldFrame
             newFrame.size.height = maxHeight
             if newFrame != oldFrame {
-                print("Update \(currentIndex): \(brickAttributes.frame) to \(newFrame)")
+//                print("Update \(currentIndex): \(brickAttributes.frame) to \(newFrame)")
                 brickAttributes.frame = newFrame
                 updatedAttributes?(attributes: brickAttributes, oldFrame: oldFrame)
             }
@@ -600,7 +594,9 @@ extension BrickLayoutSection {
                 return false
             }
             if rect.intersects(brickAttributes.frame) {
-                attributes.append(brickAttributes)
+                if !brickAttributes.hidden {
+                    attributes.append(brickAttributes)
+                }
                 return true
             } else {
                 return false

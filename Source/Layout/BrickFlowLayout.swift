@@ -71,6 +71,7 @@ public class BrickFlowLayout: UICollectionViewLayout, BrickLayout {
         return unwrappedCollectionView
     }
 
+    var isCalculating = false
 
     /// Sections
     internal private(set) var sections: [Int: BrickLayoutSection]?
@@ -327,7 +328,11 @@ extension BrickFlowLayout {
     }
 
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        calculateSectionsIfNeeded(rect)
+        if !isCalculating {
+            isCalculating = true
+            calculateSectionsIfNeeded(rect)
+            isCalculating = false
+        }
         if BrickLayoutSection.OnlyCalculateFrameOfInterest {
             guard let sections = self.sections else {
                 return nil
@@ -617,8 +622,8 @@ extension BrickFlowLayout: BrickLayoutInvalidationProvider {
                 })
 
                 // Because attributes could have been added, the frame height might have been changed
-//                attributes.frame = brickSection.frame
-//                attributes.originalFrame.size = brickSection.frame.size
+                attributes.frame = brickSection.frame
+                attributes.originalFrame.size = brickSection.frame.size
             }
         default: break
         }
