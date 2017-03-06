@@ -619,47 +619,29 @@ class InteractiveTests: XCTestCase {
     }
 
     func testBricksOnIpad() {
+        // setup ipad sized collection view
         brickView = BrickCollectionView(frame: CGRect(x: 0, y: 0, width: 768, height: 968))
 
-        let imageCarouselEdgeInsetsIpad = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
-        let brickSectionIpadEdgeInsets = UIEdgeInsets(top: 16, left: 0, bottom: 8, right: 0)
-        let productInfoOuterSectionEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        let productInfoInnerSectionEdgeInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        let topBottomInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        let PDPRatingWidth: CGFloat = 89
-        let PDPRatingLabelWidth: CGFloat = 200
-        let PDPRatingHeight: CGFloat     = 40
-
-        let productInfoTopSection = BrickSection(bricks: [
-            BrickSection(backgroundColor: .whiteColor(), bricks: [
-                DummyBrick("Brick1", height: .Fixed(size: 50)),
-                ], edgeInsets: productInfoInnerSectionEdgeInsets)
-            ], edgeInsets: productInfoOuterSectionEdgeInsets)
-
+        // setup brick section
         let topLeftHalf = BrickSection(width: .Ratio(ratio: 0.5), bricks: [
-            DummyBrick("Brick3", height: .Fixed(size: 300)),
-            ], edgeInsets: imageCarouselEdgeInsetsIpad)
+            DummyBrick("BrickLeft", height: .Fixed(size: 300)),
+            ], edgeInsets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0))
 
-
-        let ratingSection: Brick = BrickSection(bricks: [
-            DummyBrick("ratingBrick", width: .Fixed(size: PDPRatingWidth), height: .Fixed(size: PDPRatingHeight)),
-            DummyBrick("NumberOfRatingsIdentifier", width: .Fixed(size: PDPRatingLabelWidth), height: .Fixed(size: PDPRatingHeight))
+        // Fixed width section
+        let fixedWidthSection: Brick = BrickSection(bricks: [
+            DummyBrick("BrickFixed1", width: .Fixed(size: 89), height: .Fixed(size: 40)),
+            DummyBrick("BrickFixed2", width: .Fixed(size: 200), height: .Fixed(size: 40))
         ])
 
-        let priceInfoSection: Brick = BrickSection(bricks: [
+        let nonFixedWidthSection: Brick = BrickSection(bricks: [
             BrickSection(bricks: [
-            DummyBrick("PriceLabelIdentifier", width: .Ratio(ratio: 1), height: .Fixed(size: 41), backgroundColor: .whiteColor()),
-            ], edgeInsets: topBottomInsets)
+            DummyBrick("BrickNonFixed1", width: .Ratio(ratio: 1), height: .Fixed(size: 41), backgroundColor: .whiteColor()),
+            ], edgeInsets: UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0))
             ])
 
         let topRightHalf = BrickSection(width: .Ratio(ratio: 0.5), bricks: [
-            ratingSection,
-            priceInfoSection,
-            DummyBrick("Brick10", height: .Fixed(size: 50)),
-            DummyBrick("Brick11", height: .Fixed(size: 50)),
-            DummyBrick("Brick12", height: .Fixed(size: 50)),
-            DummyBrick("Brick13", height: .Fixed(size: 50)),
-            DummyBrick("Brick14", height: .Fixed(size: 50)),
+            fixedWidthSection,
+            nonFixedWidthSection,
             ])
 
         let topSection = BrickSection(bricks: [
@@ -668,16 +650,12 @@ class InteractiveTests: XCTestCase {
                 topRightHalf
                 ])
             ], edgeInsets: UIEdgeInsetsMake(0, 8, 0, 8))
-        let registryToggleSection = BrickSection(bricks: [
-            DummyBrick("Brick15", height: .Fixed(size: 50)),
-            DummyBrick("Brick16", height: .Fixed(size: 50)),
-            ], inset: 4)
-        let brickSection = BrickSection("MySection", bricks: [
-            productInfoTopSection,
-            topSection,
-            registryToggleSection,
-            ], inset: 8, edgeInsets: brickSectionIpadEdgeInsets)
 
+        let brickSection = BrickSection(bricks: [
+            topSection,
+            ], inset: 8, edgeInsets: UIEdgeInsets(top: 16, left: 0, bottom: 8, right: 0))
+
+        // hide left half and layout brick section
         topLeftHalf.isHidden = true
         brickView.setSection(brickSection)
         brickView.layoutIfNeeded()
@@ -687,18 +665,14 @@ class InteractiveTests: XCTestCase {
             expectation.fulfill()
         }
 
+        // show left half
         topLeftHalf.isHidden = false
-
         waitForExpectationsWithTimeout(5, handler: nil)
-
         brickView.invalidateVisibility()
         brickView.layoutIfNeeded()
 
-        let priceBrickSection = brickView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 9))
-//        XCTAssertEqual(priceBrickSection!.frame, CGRect(x: 384, y: 90, width: 376, height: 57))
+        let priceBrickSection = brickView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 7))
         XCTAssertEqual(priceBrickSection!.frame.origin.x, 384)
-
-        // Note: uncomment the invalidateVisibilty and the topLeftHalf.isHidden = true and the test will pass
     }
 
 }
