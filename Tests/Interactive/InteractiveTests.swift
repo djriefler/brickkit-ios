@@ -617,5 +617,88 @@ class InteractiveTests: XCTestCase {
         let attributes = brickView.layout.layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 1, inSection: 1)) as? BrickLayoutAttributes
         XCTAssertEqual(attributes?.identifier, "Brick1")
     }
-    
+
+    func testBricksOnIpad() {
+        brickView = BrickCollectionView(frame: CGRect(x: 0, y: 0, width: 768, height: 968))
+
+        let imageCarouselEdgeInsetsIpad = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+        let brickSectionIpadEdgeInsets = UIEdgeInsets(top: 16, left: 0, bottom: 8, right: 0)
+        let productInfoOuterSectionEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+        let productInfoInnerSectionEdgeInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        let topBottomInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+        let PDPRatingWidth: CGFloat = 89
+        let PDPRatingLabelWidth: CGFloat = 200
+        let PDPRatingHeight: CGFloat     = 40
+
+        let productInfoTopSection = BrickSection(bricks: [
+            BrickSection(backgroundColor: .whiteColor(), bricks: [
+                DummyBrick("Brick1", height: .Fixed(size: 50)),
+                ], edgeInsets: productInfoInnerSectionEdgeInsets)
+            ], edgeInsets: productInfoOuterSectionEdgeInsets)
+
+        let topLeftHalf = BrickSection(width: .Ratio(ratio: 0.5), bricks: [
+            DummyBrick("Brick3", height: .Fixed(size: 300)),
+            ], edgeInsets: imageCarouselEdgeInsetsIpad)
+
+
+        let ratingSection: Brick = BrickSection(bricks: [
+            DummyBrick("ratingBrick", width: .Fixed(size: PDPRatingWidth), height: .Fixed(size: PDPRatingHeight)),
+            DummyBrick("NumberOfRatingsIdentifier", width: .Fixed(size: PDPRatingLabelWidth), height: .Fixed(size: PDPRatingHeight))
+        ])
+
+        let priceInfoSection: Brick = BrickSection(bricks: [
+            BrickSection(bricks: [
+            DummyBrick("PriceLabelIdentifier", width: .Ratio(ratio: 1), height: .Fixed(size: 41), backgroundColor: .whiteColor()),
+            ], edgeInsets: topBottomInsets)
+            ])
+
+        let topRightHalf = BrickSection(width: .Ratio(ratio: 0.5), bricks: [
+            ratingSection,
+            priceInfoSection,
+            DummyBrick("Brick10", height: .Fixed(size: 50)),
+            DummyBrick("Brick11", height: .Fixed(size: 50)),
+            DummyBrick("Brick12", height: .Fixed(size: 50)),
+            DummyBrick("Brick13", height: .Fixed(size: 50)),
+            DummyBrick("Brick14", height: .Fixed(size: 50)),
+            ])
+
+        let topSection = BrickSection(bricks: [
+            BrickSection(backgroundColor: .whiteColor(), bricks: [
+                topLeftHalf,
+                topRightHalf
+                ])
+            ], edgeInsets: UIEdgeInsetsMake(0, 8, 0, 8))
+        let registryToggleSection = BrickSection(bricks: [
+            DummyBrick("Brick15", height: .Fixed(size: 50)),
+            DummyBrick("Brick16", height: .Fixed(size: 50)),
+            ], inset: 4)
+        let brickSection = BrickSection("MySection", bricks: [
+            productInfoTopSection,
+            topSection,
+            registryToggleSection,
+            ], inset: 8, edgeInsets: brickSectionIpadEdgeInsets)
+
+        topLeftHalf.isHidden = true
+        brickView.setSection(brickSection)
+        brickView.layoutIfNeeded()
+
+        let expectation = expectationWithDescription("Reload")
+        brickView.reloadBricksWithIdentifiers(["MySection"], shouldReloadCell: false) { (completed) in
+            expectation.fulfill()
+        }
+
+        topLeftHalf.isHidden = false
+
+        waitForExpectationsWithTimeout(5, handler: nil)
+
+        brickView.invalidateVisibility()
+        brickView.layoutIfNeeded()
+
+        let priceBrickSection = brickView.cellForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 9))
+//        XCTAssertEqual(priceBrickSection!.frame, CGRect(x: 384, y: 90, width: 376, height: 57))
+        XCTAssertEqual(priceBrickSection!.frame.origin.x, 384)
+
+        // Note: uncomment the invalidateVisibilty and the topLeftHalf.isHidden = true and the test will pass
+    }
+
 }
